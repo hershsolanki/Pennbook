@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1> Create an Account! </h1>
+  <form action="/createaccount" method="post">
+  	Choose A Username: 
+  	<input type = "text" name="username"><br>
+  	Choose A Password: 
+  	<input type = "text" name = "password"> <br>
+  	Your First Name: 
+  	<input type = "text" name = "firstname"> <br>
+    Your Last Name: 
+    <input type = "text" name = "lastname"> <br>
+    Your Email: 
+    <input type = "text" name = "email"> <br>
+    Your Affiliation: 
+    <input type = "text" name = "affiliation"><br>
+    Your Interests: 
+    <input type = "text" name = "interests"><br>
+    Your Birthday: 
+    <input type = "text" name = "birthday">  
+  	<br>
+  	
+  <input type="submit" value="Sign Up">
+  </form>
+  <%if (message!=null) { %>
+  <font color="red"> <%= message %>
+  <p>
+  <% } %>
+</body>
+</html>

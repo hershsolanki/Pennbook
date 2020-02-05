@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type = "text/javascript">
+
+</script>
+
+<style type="text/css">
+.homeBar {
+  background: #efefef;
+  display: inline-flex;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+}
+.homeBarItem {
+  margin-right: 10px;
+}
+</style>
+
+<body>
+<div class="homeBar">
+<div class="homeBarItem"><a href="http://localhost:8080/restaurants">Home</a></div>
+<div class="homeBarItem"><a href="/profile/?user=<%= currentUser %>">My Profile</a></div>
+<div class="homeBarItem"><a href="http://localhost:8080/logout">Log-out</a></div>
+</div><br>
+<h2>Your friend recommendations</h2><br><br>
+<% if (list == undefined || list.length == 0) { %>
+  No recommendations :(
+<% } else { %>
+  <% for (var i = 0; i < list.length; i++) { %>
+    <a href="/profile/?user=<%= list[i] %>"><%=list[i]%></a><br>
+  <% } %>
+<% } %>
+
+</body>
+</html>

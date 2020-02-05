@@ -1,0 +1,44 @@
+<html>
+<head>
+ <title>Welcome to the Restaurant Database</title>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <style type="text/css">
+ body {
+ padding-top: 40px;
+ padding-bottom: 40px;
+ background-color: white;
+ }
+ .login-box {
+ max-width: 330px;
+ margin: 0 auto;
+ }
+ .login-box .form-control {
+ margin-bottom: 10px;
+ }
+ </style>
+</head>
+<body>
+ <div class="login-box">
+ <h3>Welcome, Please Login! </h3>
+ <form method="post" action="http://localhost:8080/checklogin">
+ <input type="text" name="username" size="20" class="form-control" placeholder="Username">
+ <input type="text" name="password" size="20" class="form-control" placeholder="Password">
+ <input type="submit" name="xyz" value="Login" class="btn btn-lg btn-primary btn-block">
+   </form>
+  <% if (message!= null) { %>
+  <font color="red" > <%= message %>
+  <p>
+  <% } %>
+ 
+ <br>
+   <font color="black">
+  <a href="http://localhost:8080/signup"> Sign-up here </a>
+  <p> 
+  
+  <br> <br> <br>
+  Author: Neha Nayak (nehan) </p>
+ 
+ </div>
+</body>
+</html>

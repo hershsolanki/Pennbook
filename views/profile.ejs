@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type = "text/javascript">
+
+</script>
+
+<style type="text/css">
+.homeBar {
+  background: #efefef;
+  display: inline-flex;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+}
+.homeBarItem {
+  margin-right: 10px;
+}
+</style>
+
+<body>
+
+<div class="homeBar">
+<div class="homeBarItem"><a href="http://localhost:8080/restaurants">Home</a></div>
+<% if (username == currentUser) { %>
+<div class="homeBarItem"><a href="/updateprofile">Update Profile</a></div>
+<% } else { %> 
+<div class="homeBarItem"><a href="/profile/?user=<%= currentUser %>">My Profile</a></div>
+<% } %>
+<div class="homeBarItem"><a href="http://localhost:8080/logout">Log-out</a></div>
+</div>
+
+  <h1> <%= username %> </h1>
+  <input type="hidden" name="username" id="username" value=<%= username %>>
+  First name: <%= firstname %></br>
+  Last name: <%= lastname %></br>
+  Email: <%= email %></br>
+  Affiliation: <%= affiliation %></br>
+  Interests: <%= interests %></br>
+  Birthday: <%= birthday %><br><br>
+  
+  <script>
+  var x = document.getElementById("username").value;
+  sessionStorage.setItem("u1", x);
+   </script>
+
+  Status: <%= status %><br>
+  <% if (active) { %>
+    <font color="green">Online</font>
+  <% } else { %>
+    <font color="red">Offline</font>
+  <% } %><br><br>
+
+<% if (username != currentUser && !isFriend) { %>
+  <form action="/addfriend" method="post" id="friendForm">
+    <input type="hidden" name="username" value=<%= username %>>
+    <button type = "button" name = "friendButton" value="<%= username %>" onclick="this.form.submit();this.disabled=true"> Add friend </button>
+  </form><br><br>
+<% } else if (username != currentUser && isFriend) { %>
+
+  <form action ="/sendmessage" method="post">
+    <input type="hidden" name="username" value="<%= username %>">
+    Send message: 
+    <input type = "text" name="message" id = "message"> 
+    <br> 
+    <input type = "submit" id = "button" value="Send!">
+  </form><br>
+
+    <% if (active) { %>
+    <form action ="/startChat" method = "post">
+    <input type = "hidden" name = "user" value = "<%= username %>">
+<input type = "submit" value="Start Chat">
+</form>
+  <% } %>
+    
+  <br>
+  <%} else { %>
+    <a href="/updateprofile">Update Profile</a><br><br>
+  <% } %>
+
+<b>Friends</b><br>
+<% if (friends != undefined || friends.length != 0) { %>
+<% for (var a = 0; a < friends.length; a++) { %>
+   <a href="/profile/?user=<%= friends[a] %>"><%= friends[a] %></a><br>
+<% }} %><br>
+
+  <table border="1">
+  <tr>
+    <th> User </th>
+    <th> Post </th>
+  </tr>
+  <% for (var a = posts.length-1; a >= 0; a--) { %>
+  <tr>
+          <td align = "center" rowspan="2" valign="top">
+            <a href="/profile/?user=<%= posts[a].value.user %>"><%=posts[a].value.user%></a>
+            <br>
+            <br>
+            <p><b>Liked By</b></p>
+            <%=posts[a].value.liker%>
+          </td>
+          <td align = "center"><%= posts[a].value.post %></td>
+        </tr>
+        <tr>
+          <td align="center">
+            <table border="1" width="100%">
+            <% if (comments != null && comments[a].value.comment.length != 0) { %>
+            <tr><th align = "center">User</th><th align = "center">Comment</th></tr>
+            <% commentUsers = comments[a].value.user.split('\t') %>
+            <% commentPosts = comments[a].value.comment.split('\t') %>
+            <% for (var b = 0; b < commentUsers.length-1; b++) { %>
+
+            <tr><td align="center"><%= commentUsers[b] %></td><td align="center"><%= commentPosts[b] %></td></tr>
+            <% }} %>
+            <tr>
+            <td align="center" colspan="2">
+            <form action ="/addlike" method="post">
+              <input type = "hidden" name = "postID" value="<%= posts[a].key%>">
+              <input type = "hidden" name = "username" value=<%= username %>>
+              <input type = "hidden" name="username"> 
+              <br> 
+              <input type = "submit" id = "button" value="Like!">
+            </form>
+            <form action ="/addcommentprofile/?user=<%=username%>" method="post">
+              <input type = "hidden" name = "postID" value="<%= posts[a].key%>">
+              <input type = "text" name="comment"> 
+              <br> 
+              <input type = "submit" id = "button" value="Comment!">
+            </form>
+            </td></tr>
+            </table>
+          </td>
+        </tr>
+  <% } %>
+  </table>
+
+</body>
+</html>

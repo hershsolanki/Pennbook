@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <title>Chat</title>
+  </head>
+<style type="text/css">
+.homeBar {
+  background: #efefef;
+  display: inline-flex;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+}
+.homeBarItem {
+  margin-right: 10px;
+}
+</style>
+  <body>
+
+<div class="homeBar">
+<div class="homeBarItem"><a href="http://localhost:8080/restaurants">Home</a></div>
+<div class="homeBarItem"><a href="http://localhost:8080/logout">Log-out</a></div>
+</div><br><br>
+
+
+<b>Chat History</b><br>
+
+<% var userList = user.split("\t") %>
+<% var chatList = comment.split("\t") %>
+<% for (var a = 0; a < userList.length - 1; a++) { %>
+            <tr><td align="center"><%= userList[a] + "- " %></td><td align="center"><%= chatList[a] %></td></tr>
+            <br>
+<% } %><br>
+
+
+        <section id="chatroom">
+      <section id="feedback"></section>
+    </section>
+    
+    
+      <input id="message" class="vertical-align" type="text" />
+      <button id="send_message" class="vertical-align" type="button">Send</button>
+      
+    <script>
+    
+   $(function(){
+    //make connection
+    var socket = io.connect('http://localhost:8080')
+
+    //buttons and inputs
+    var message = $("#message")
+    var send_message = $("#send_message")
+    var chatroom = $("#chatroom")
+    var feedback = $("#feedback")
+
+    var user2 = ""
+    var user = ""
+    
+    $.get('/sendrestaurants', function(data) {
+           user = data.user;
+      });
+
+    var user2 = sessionStorage.getItem("u1");
+    console.log("the user2 is " + user2);
+
+    var roomname;
+    if (user > user2) {
+      roomname = user + "-" + user2
+    } else {
+      roomname = user2 + "-" + user
+    }
+    
+
+
+    
+    send_message.click(function(){
+        socket.emit('new_message', {message : message.val(), user: user, user2: user2})
+    })
+
+    socket.on("new_message", (data) => {
+        chatroom.append(data.user + "- " + data.message + "</p>")
+    })
+
+
+});
+
+    </script>
+
+  </body>
+</html>

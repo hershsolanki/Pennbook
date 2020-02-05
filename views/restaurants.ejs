@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type = "text/javascript"> 
+
+function updateSuggestions() {
+  var term = document.getElementById('searchTerm').value;
+  if (term == "") {
+    $(".dropdown-content").hide();
+  }
+  request = new XMLHttpRequest();
+  request.open("GET", "/search/"+escape(term));
+  request.onreadystatechange = function() {
+    if ((request.readyState == 4) && (request.status == 200)) {
+      var xmldoc = request.responseXML;
+      var root = xmldoc.getElementsByTagName('root').item(0);
+      var elements = root.getElementsByTagName('element');
+      var htmlOut = "<div class='dropdown-content'>";
+      for (var i=0; i<elements.length; i++) {
+        htmlOut += "<a href=/profile/?user=" + elements.item(i).textContent + ">" + elements.item(i).textContent + "</a>";
+      }
+      htmlOut += "</div>"
+      document.getElementById('suggestions').innerHTML = htmlOut;
+    }
+  }
+  request.send();
+};
+
+var refreshPage = function() {
+  location.reload();
+  setTimeout(refreshPage, 5000);
+}
+
+
+$(document).ready(function() {
+
+  setTimeout(refreshPage, 5000); /* 5 s */
+});
+
+</script>
+
+<style type="text/css">
+.posts {
+  float: left;
+  position: absolute;
+  top: 200px;
+}
+.chat {
+  float: right;
+  position: relative;
+  top: 200px;
+}
+.dropdown-content {
+  width: 200px;
+  position: absolute;
+}
+.dropdown-content a {
+  background: #fff;
+  display: block;
+  text-decoration: none;
+  border: 0.5px solid #efefef;
+  color: black;
+  position: relative;
+  margin-bottom: -1px;
+}
+.dropdown-content a:hover {
+  background: #F0F8FF;
+  color: black;
+  text-decoration: none;
+  border-bottom: 0.5px solid white;
+}
+.dropdown-content a:visited {
+  color: black;
+}
+.show {
+  display: block;
+}
+.searchInput {
+  width: 195px;
+}
+.homeBar {
+  background: #efefef;
+  display: inline-flex;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+}
+.homeBarItem {
+  margin-right: 10px;
+}
+</style>
+
+
+  <head>
+    <title>Homepage</title>
+  </head>
+  <body>
+
+    <div class='page'>
+      <div class="homeBar">
+      <div class="homeBarItem">
+      <form action="/search" method="post">
+        <div><input id="searchTerm" type="text" name="searchTerm" placeholder="Search for a user" onKeyUp="updateSuggestions()" class="searchInput" required><input type="submit" value="Search">
+      <div id="suggestions" class="suggestions"></div></div>
+      </div>
+      </form>
+
+      <div class="homeBarItem"><a href="/profile/?user=<%= user %>">My Profile</a></div>
+      <div class="homeBarItem"><a href="/updateprofile">Update Profile</a></div>
+      <div class="homeBarItem"><a href="http://localhost:8080/visualization">Friend Visualization</a></div>
+      <div class="homeBarItem"><a href="http://localhost:8080/logout">Log-out</a></div>
+
+      </div>
+      <form action="/output" method="post">
+      <input type="submit" value="Export Data">
+      </form>
+      <form action="/import" method="post">
+      <input type="submit" value="Find Friends">
+      </form>
+      <h1>Welcome, <%= user %></h1>
+
+      <div class='posts'>
+      <b> Status update: </b><br>
+      <form action ="/addrestaurant" method="post">
+        Update: 
+        <input type = "text" name="post" id = "post"> 
+        <br> 
+        <input type = "submit" id = "button" value="Update!">
+      </form><br>
+
+
+      <% if (posts != null) { %>
+        <table border="1">
+        <tr>
+          <th> User </th>
+          <th> Post </th>
+        </tr>
+        <% for (var a = posts.length-1; a >= 0; a--) { %>
+        <% var friends = online.concat(offline) %>
+        <% if (friends.length > 0) { %>
+        <% if (friends.includes(posts[a].value.user) || friends.includes(posts[a].value.where)) { %>
+        <tr>
+          <td align = "center" rowspan="2" valign="top">
+            <% if (posts[a].value.user == posts[a].value.where) { %>
+                <a href="/profile/?user=<%= posts[a].value.user %>"><%=posts[a].value.user%></a>
+            <br>
+            <br>
+            <p><b>Liked By</b></p>
+            <%=posts[a].value.liker%>
+            <% } else { %>
+                <a href="/profile/?user=<%= posts[a].value.user %>"><%=posts[a].value.user%></a> >
+                <a href="/profile/?user=<%= posts[a].value.where %>"><%=posts[a].value.where%></a>
+                            <br>
+            <br>
+            <p><b>Liked By</b></p>
+            <%=posts[a].value.liker%>
+            <% } %>
+              </td>
+              <td align = "center"><%= posts[a].value.post %></td>
+            </tr>
+            <tr>
+              <td align="center">
+                <table border="1" width="100%">
+                <% if (comments != null && comments[a].value.comment.length != 0) { %>
+                <tr><th align = "center">User</th><th align = "center">Comment</th></tr>
+                <% commentUsers = comments[a].value.user.split('\t') %>
+                <% commentPosts = comments[a].value.comment.split('\t') %>
+                  <% for (var b = 0; b < commentUsers.length-1; b++) { %>
+
+                  <tr><td align="center"><%= commentUsers[b] %></td><td align="center"><%= commentPosts[b] %></td></tr>
+            <% }} %>
+            <tr>
+            <td align="center" colspan="2">
+            <form action ="/addlike2" method="post">
+              <input type = "hidden" name = "postID" value="<%= posts[a].key%>">
+              <input type = "hidden" name = "user" value=<%= user %>>
+              <input type = "hidden" name="user">  
+              <br> 
+              <input type = "submit" id = "button" value="Like!">
+            </form>
+            <form action ="/addcomment" method="post">
+              <input type = "hidden" name = "postID" value="<%= posts[a].key%>">
+              <input type = "text" name="comment" style="width:98%"> 
+              <br> 
+              <input type = "submit" id = "button" value="Comment!">
+            </form>
+            </td></tr>
+            </table>
+          </td>
+        </tr>
+        <% }}} %>
+        </table><br>
+        <% } %>
+        
+      </div>
+      <div class='chat'>
+      <b>Online Friends</b><br>
+      <% if (online.length > 0) { %>
+        <% for (var a = 0; a < online.length; a++) { %>
+          <a href="/profile/?user=<%= online[a] %>"><%=online[a]%></a><br>
+      <% }} else { %> none :( <% } %><br>
+      
+      <b>Offline Friends</b><br>
+      <% if (offline.length > 0) { %>
+        <% for (var a = 0; a < offline.length; a++) { %>
+          <a href="/profile/?user=<%= offline[a] %>"><%=offline[a]%></a><br>
+      <% }} else { %> none :( <% } %>
+
+      </div>
+    </div>
+  </body>
+</html>
